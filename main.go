@@ -56,7 +56,7 @@ func main() {
 	}
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)
-	ebiten.SetWindowTitle("Filter (Ebiten Demo)")
+	ebiten.SetWindowTitle("gtris")
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
