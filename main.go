@@ -1,4 +1,4 @@
-package gtris
+package main
 
 import (
 	"bytes"
