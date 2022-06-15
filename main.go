@@ -27,18 +27,68 @@ func (g *Game) Update() error {
 	return nil
 }
 
+type Position struct {
+	X int
+	Y int
+}
+
 func (g *Game) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, "Nearest Filter (default) VS Linear Filter")
 
+	// piece := []string{
+	// 	"XXXX",
+	// 	"    ",
+	// }
+	// piece := []string{
+	// 	"X   ",
+	// 	"XXXX",
+	// }
+	// piece := []string{
+	// 	"   X",
+	// 	"XXXX",
+	// }
+	// piece := []string{
+	// 	"XX  ",
+	// 	"XX  ",
+	// }
+	// piece := []string{
+	// 	" XX ",
+	// 	"XX  ",
+	// }
+	piece := []string{
+		" X  ",
+		"XXX ",
+	}
+	// piece := []string{
+	// 	"XX  ",
+	// 	" XX ",
+	// }
 	w, h := g.blockImage.Size()
-	for x := 0; x < 10; x++ {
-		for y := 0; y < 24; y++ {
-			op := &ebiten.DrawImageOptions{}
-			// op.GeoM.Scale(4, 4)
-			op.GeoM.Translate(float64(x*w), float64(y*h))
-			screen.DrawImage(g.blockImage, op)
+	piecePos := &Position{}
+	gameZonePos := &Position{X: 16, Y: 16}
+
+	for dy, row := range piece {
+		for dx, value := range row {
+			if value == 'X' {
+				op := &ebiten.DrawImageOptions{}
+				screenPos := &Position{
+					X: gameZonePos.X + (piecePos.X+dx)*w,
+					Y: gameZonePos.Y + (piecePos.Y+dy)*h,
+				}
+				op.GeoM.Translate(float64(screenPos.X), float64(screenPos.Y))
+				screen.DrawImage(g.blockImage, op)
+			}
 		}
 	}
+
+	// for x := 0; x < 10; x++ {
+	// 	for y := 0; y < 24; y++ {
+	// 		op := &ebiten.DrawImageOptions{}
+	// 		// op.GeoM.Scale(4, 4)
+	// 		op.GeoM.Translate(float64(x*w), float64(y*h))
+	// 		screen.DrawImage(g.blockImage, op)
+	// 	}
+	// }
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
