@@ -15,3 +15,11 @@ To build for the web: `make web` and all the files will be copied to the `web` d
 ## Images
 
 The image used to create all of the pngs in `gtris/images/` is `gtris/images/block.xcf`
+
+
+## Controls
+
+- Left/Right: Move
+- Up: Rotate
+- Down: Drop
+- Esc: Restart the game (it won't ask for confirmation!)
