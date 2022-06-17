@@ -23,7 +23,7 @@ func (p *Piece) Draw(screen *ebiten.Image, gameZonePos *Position, piecePos *Posi
 
 	for dy, row := range p.Blocks {
 		for dx, value := range row {
-			if value == 'X' {
+			if value == pieceBlockMarker {
 				screenPos := &Position{
 					X: gameZonePos.X + (piecePos.X+dx)*w,
 					Y: gameZonePos.Y + (piecePos.Y+dy)*h,

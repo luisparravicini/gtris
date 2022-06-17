@@ -99,10 +99,40 @@ func (g *Game) Update() error {
 	return nil
 }
 
+func (g *Game) insideGameZone(deltaPos Position) bool {
+	piecePos := *g.piecePosition
+	piecePos.Add(deltaPos)
+
+	for dy, row := range g.currentPiece.Blocks {
+		for dx, value := range row {
+			if value == pieceBlockMarker {
+				screenPos := &Position{
+					X: piecePos.X + dx,
+					Y: piecePos.Y + dy,
+				}
+
+				if screenPos.X < 0 || screenPos.X >= int(g.gameZoneSize.Width) {
+					return false
+				}
+				if screenPos.Y < 0 || screenPos.Y >= int(g.gameZoneSize.Height) {
+					return false
+				}
+
+				if g.gameZone[screenPos.Y][screenPos.X] != nil {
+					return false
+				}
+			}
+		}
+	}
+
+	return true
+}
+
 func (g *Game) processInput(key ebiten.Key) {
 	if key == ebiten.KeyDown {
-		if g.piecePosition.Y < int(g.gameZoneSize.Height)-1 {
-			g.piecePosition.Y++
+		deltaPos := Position{X: 0, Y: 1}
+		if g.insideGameZone(deltaPos) {
+			g.piecePosition.Add(deltaPos)
 		} else {
 			g.transferPieceToGameZone()
 			g.nextPiece()
@@ -110,14 +140,16 @@ func (g *Game) processInput(key ebiten.Key) {
 	}
 
 	if key == ebiten.KeyLeft {
-		if g.piecePosition.X > 0 {
-			g.piecePosition.X--
+		deltaPos := Position{X: -1, Y: 0}
+		if g.insideGameZone(deltaPos) {
+			g.piecePosition.Add(deltaPos)
 		}
 	}
 
 	if key == ebiten.KeyRight {
-		if g.piecePosition.X < int(g.gameZoneSize.Width) {
-			g.piecePosition.X++
+		deltaPos := Position{X: 1, Y: 0}
+		if g.insideGameZone(deltaPos) {
+			g.piecePosition.Add(deltaPos)
 		}
 	}
 }

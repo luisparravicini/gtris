@@ -47,7 +47,7 @@ func NewAttractModeInput() *AttractModeInput {
 		keyPressed: make(chan ebiten.Key),
 	}
 	go func() {
-		ticker := time.NewTicker(100 * time.Millisecond)
+		ticker := time.NewTicker(50 * time.Millisecond)
 		for {
 			select {
 			case <-ticker.C:
