@@ -39,6 +39,9 @@ var imgBlockF []byte
 //go:embed images/block-g.png
 var imgBlockG []byte
 
+//go:embed images/block-bg.png
+var imgBlockBG []byte
+
 type Size struct {
 	Width  uint
 	Height uint
@@ -52,6 +55,7 @@ type Game struct {
 	piecePosition *Position
 	gameZoneSize  Size
 	gameZone      [][]*ebiten.Image
+	bgBlockImage  *ebiten.Image
 }
 
 func (g *Game) nextPiece() {
@@ -115,15 +119,19 @@ type Piece struct {
 	Image  *ebiten.Image
 }
 
-func NewPiece(blocks []string, imgData []byte) *Piece {
+func createImage(imgData []byte) *ebiten.Image {
 	img, _, err := image.Decode(bytes.NewReader(imgData))
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	return ebiten.NewImageFromImage(img)
+}
+
+func NewPiece(blocks []string, imgData []byte) *Piece {
 	return &Piece{
 		Blocks: blocks,
-		Image:  ebiten.NewImageFromImage(img),
+		Image:  createImage(imgData),
 	}
 }
 
@@ -154,7 +162,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for y, row := range gameZone {
 		for x, cellImage := range row {
 			if cellImage == nil {
-				continue
+				cellImage = g.bgBlockImage
 			}
 
 			w, h := cellImage.Size()
@@ -223,6 +231,7 @@ func NewGame() *Game {
 			}, imgBlockG),
 		},
 		gameZoneSize: Size{Width: 10, Height: 24},
+		bgBlockImage: createImage(imgBlockBG),
 	}
 
 	game.gameZone = make([][]*ebiten.Image, game.gameZoneSize.Height)
