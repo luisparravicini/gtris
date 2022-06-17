@@ -31,6 +31,7 @@ const (
 type Game struct {
 	lastTime         uint
 	fallTime         uint
+	elapsed          uint
 	score            uint
 	state            GameState
 	attractMode      bool
@@ -76,6 +77,8 @@ func (g *Game) Start() {
 	g.score = 0
 	g.attractMode = true
 	g.input = g.inputAttractMode
+	g.lastTime = 0
+	g.elapsed = 0
 
 	g.gameZone = make([][]*ebiten.Image, g.gameZoneSize.Height)
 	for y := range g.gameZone {
@@ -92,12 +95,23 @@ func (g *Game) StartPlay() {
 }
 
 func (g *Game) Update() error {
-	if g.lastTime == 0 {
-		g.lastTime = uint(time.Now().UnixMilli())
+	now := uint(time.Now().UnixMilli())
+	firstLoop := g.lastTime == 0
+	if !firstLoop {
+		g.elapsed += now - g.lastTime
 	}
+	g.lastTime = now
 
 	switch g.state {
 	case GameStatePlaying:
+		if !firstLoop {
+			if g.elapsed > g.fallTime {
+				g.processInput(keyDown)
+				g.elapsed = 0
+				return nil
+			}
+		}
+
 		key := g.input.Read()
 		if key != nil {
 			g.processInput(*key)
@@ -234,7 +248,7 @@ func NewGame() *Game {
 		txtFont:          NewFont(),
 		inputAttractMode: NewAttractModeInput(),
 		inputKeyboard:    &KeyboardInput{},
-		fallTime:         300,
+		fallTime:         700,
 		pieces:           allPieces,
 		gameZoneSize:     Size{Width: 10, Height: 24},
 		bgBlockImage:     createImage(imgBlockBG),
