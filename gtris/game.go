@@ -47,10 +47,18 @@ type Size struct {
 	Height uint
 }
 
+type GameState int
+
+const (
+	GameStateGameOver GameState = iota
+	GameStatePlaying
+)
+
 type Game struct {
 	lastTime      uint
 	fallTime      uint
 	score         uint
+	state         GameState
 	pieces        []*Piece
 	currentPiece  *Piece
 	piecePosition *Position
@@ -86,14 +94,34 @@ func (g *Game) transferPieceToGameZone() {
 
 }
 
+func (g *Game) Start() {
+	g.state = GameStatePlaying
+	g.score = 0
+
+	g.gameZone = make([][]*ebiten.Image, g.gameZoneSize.Height)
+	for y := range g.gameZone {
+		g.gameZone[y] = make([]*ebiten.Image, g.gameZoneSize.Width)
+	}
+
+	g.nextPiece()
+}
+
 func (g *Game) Update() error {
 	if g.lastTime == 0 {
 		g.lastTime = uint(time.Now().UnixMilli())
 	}
 
-	key := g.input.Read()
-	if key != nil {
-		g.processInput(*key)
+	switch g.state {
+	case GameStatePlaying:
+		key := g.input.Read()
+		if key != nil {
+			g.processInput(*key)
+		}
+	case GameStateGameOver:
+		key := g.input.Read()
+		if key != nil {
+			g.Start()
+		}
 	}
 
 	return nil
@@ -136,6 +164,12 @@ func (g *Game) processInput(key ebiten.Key) {
 		} else {
 			g.transferPieceToGameZone()
 			g.nextPiece()
+
+			deltaPos := Position{}
+			if !g.insideGameZone(deltaPos) {
+				g.state = GameStateGameOver
+				return
+			}
 		}
 	}
 
@@ -235,12 +269,7 @@ func NewGame() *Game {
 		bgBlockImage: createImage(imgBlockBG),
 	}
 
-	game.gameZone = make([][]*ebiten.Image, game.gameZoneSize.Height)
-	for y := range game.gameZone {
-		game.gameZone[y] = make([]*ebiten.Image, game.gameZoneSize.Width)
-	}
-
-	game.nextPiece()
+	game.Start()
 
 	return game
 }
