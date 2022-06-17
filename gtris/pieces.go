@@ -42,12 +42,10 @@ var allPieces = []*Piece{
 		{0, 0, 0, 1},
 		{1, 1, 1, 1},
 	}, imgBlockC),
-
 	NewPiece([][]int{
 		{1, 1, 0, 0},
 		{1, 1, 0, 0},
 	}, imgBlockD),
-
 	NewPiece([][]int{
 		{0, 1, 1, 0},
 		{1, 1, 0, 0},
