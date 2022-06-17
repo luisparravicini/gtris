@@ -39,17 +39,41 @@ var imgBlockF []byte
 //go:embed images/block-g.png
 var imgBlockG []byte
 
+type Size struct {
+	Width  uint
+	Height uint
+}
+
 type Game struct {
 	lastTime      uint
 	fallTime      uint
 	pieces        []*Piece
 	currentPiece  *Piece
 	piecePosition *Position
+	gameZoneSize  Size
+	gameZone      [][]*ebiten.Image
 }
 
 func (g *Game) nextPiece() {
 	g.currentPiece = g.pieces[rand.Intn(len(g.pieces))]
 	g.piecePosition = &Position{X: 4, Y: 0}
+}
+
+func (g *Game) transferPieceToGameZone() {
+	piece := g.currentPiece
+	piecePos := g.piecePosition
+	for dy, row := range piece.Blocks {
+		for dx, value := range row {
+			if value == 'X' {
+				gameZonePos := &Position{
+					X: piecePos.X + dx,
+					Y: piecePos.Y + dy,
+				}
+				g.gameZone[gameZonePos.Y][gameZonePos.X] = piece.Image
+			}
+		}
+	}
+
 }
 
 func (g *Game) Update() error {
@@ -58,9 +82,10 @@ func (g *Game) Update() error {
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyDown) {
-		if g.piecePosition.Y < 23 {
+		if g.piecePosition.Y < int(g.gameZoneSize.Height)-1 {
 			g.piecePosition.Y++
 		} else {
+			g.transferPieceToGameZone()
 			g.nextPiece()
 		}
 	}
@@ -72,7 +97,7 @@ func (g *Game) Update() error {
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		if g.piecePosition.X < 9 {
+		if g.piecePosition.X < int(g.gameZoneSize.Width) {
 			g.piecePosition.X++
 		}
 	}
@@ -123,9 +148,28 @@ func (p *Piece) Draw(screen *ebiten.Image, gameZonePos *Position, piecePos *Posi
 func (g *Game) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, "Nearest Filter (default) VS Linear Filter")
 
+	gameZonePos := &Position{X: 16, Y: 16}
+
+	gameZone := g.gameZone
+	for y, row := range gameZone {
+		for x, cellImage := range row {
+			if cellImage == nil {
+				continue
+			}
+
+			w, h := cellImage.Size()
+			screenPos := &Position{
+				X: gameZonePos.X + x*w,
+				Y: gameZonePos.Y + y*h,
+			}
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Translate(float64(screenPos.X), float64(screenPos.Y))
+			screen.DrawImage(cellImage, op)
+		}
+	}
+
 	if g.currentPiece != nil {
 		piece := g.currentPiece
-		gameZonePos := &Position{X: 16, Y: 16}
 		piece.Draw(screen, gameZonePos, g.piecePosition)
 	}
 
@@ -143,9 +187,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return screenWidth, screenHeight
 }
 
-func main() {
-	rand.Seed(time.Now().UnixNano())
-
+func NewGame() *Game {
 	game := &Game{
 		fallTime: 300,
 		pieces: []*Piece{
@@ -180,8 +222,23 @@ func main() {
 				" XX ",
 			}, imgBlockG),
 		},
+		gameZoneSize: Size{Width: 10, Height: 24},
 	}
+
+	game.gameZone = make([][]*ebiten.Image, game.gameZoneSize.Height)
+	for y := range game.gameZone {
+		game.gameZone[y] = make([]*ebiten.Image, game.gameZoneSize.Width)
+	}
+
 	game.nextPiece()
+
+	return game
+}
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+
+	game := NewGame()
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("gtris")
