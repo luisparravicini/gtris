@@ -29,19 +29,24 @@ const (
 )
 
 type Game struct {
-	lastTime         time.Time
-	fallTime         uint
-	elapsed          uint
-	score            uint
-	state            GameState
-	attractMode      bool
-	pieces           []*Piece
-	currentPiece     *Piece
-	piecePosition    *Position
-	gameZoneSize     Size
-	gameZone         [][]*ebiten.Image
-	bgBlockImage     *ebiten.Image
-	txtFont          font.Face
+	lastTime time.Time
+	fallTime uint
+	elapsed  uint
+
+	score       int
+	state       GameState
+	attractMode bool
+	pieces      []*Piece
+
+	currentPiece  *Piece
+	piecePosition *Position
+
+	gameZoneSize Size
+	gameZone     [][]*ebiten.Image
+	bgBlockImage *ebiten.Image
+
+	txtFont font.Face
+
 	input            Input
 	inputAttractMode Input
 	inputKeyboard    Input
@@ -160,6 +165,8 @@ func (g *Game) processInput(key ebiten.Key) {
 			g.piecePosition.Add(deltaPos)
 		} else {
 			g.transferPieceToGameZone()
+			linesRemoved := g.checkForLines()
+			g.updateScore(linesRemoved)
 			g.nextPiece()
 
 			deltaPos := Position{}
@@ -185,7 +192,7 @@ func (g *Game) processInput(key ebiten.Key) {
 	}
 }
 
-func (g *Game) drawScore(screen *ebiten.Image, gameZonePos *Position) {
+func (g *Game) drawText(screen *ebiten.Image, gameZonePos *Position) {
 	boardBlockWidth, _ := g.bgBlockImage.Size()
 	boardWidth := int(g.gameZoneSize.Width) * boardBlockWidth
 	text.Draw(screen, "SCORE", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2, color.White)
@@ -204,10 +211,47 @@ func (g *Game) drawScore(screen *ebiten.Image, gameZonePos *Position) {
 	}
 }
 
+func (g *Game) checkForLines() int {
+	lines := []int{}
+	for y, row := range g.gameZone {
+		var full = true
+		for _, cellImage := range row {
+			if cellImage == nil {
+				full = false
+				break
+			}
+		}
+		if full {
+			lines = append(lines, y)
+		}
+	}
+
+	for _, y := range lines {
+		emptyRow := [][]*ebiten.Image{
+			make([]*ebiten.Image, g.gameZoneSize.Width),
+		}
+		g.gameZone = append(append(emptyRow, g.gameZone[0:y]...), g.gameZone[(y+1):]...)
+	}
+
+	return len(lines)
+}
+
+func (g *Game) updateScore(lines int) {
+	perLineScore := 100
+	g.score += lines * perLineScore
+	if lines > 1 {
+		bonus := perLineScore / 2
+		for i := 0; i < int(lines); i++ {
+			g.score += bonus
+			bonus *= 2
+		}
+	}
+}
+
 func (g *Game) Draw(screen *ebiten.Image) {
 	gameZonePos := &Position{X: 16, Y: 16}
 
-	g.drawScore(screen, gameZonePos)
+	g.drawText(screen, gameZonePos)
 
 	gameZone := g.gameZone
 	for y, row := range gameZone {
