@@ -65,6 +65,18 @@ func (g *Game) Update() error {
 		}
 	}
 
+	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+		if g.piecePosition.X > 0 {
+			g.piecePosition.X--
+		}
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyRight) {
+		if g.piecePosition.X < 9 {
+			g.piecePosition.X++
+		}
+	}
+
 	return nil
 }
 
