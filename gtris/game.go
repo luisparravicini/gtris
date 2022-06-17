@@ -152,13 +152,17 @@ func (g *Game) processInput(key ebiten.Key) {
 	}
 }
 
-func (g *Game) Draw(screen *ebiten.Image) {
-	gameZonePos := &Position{X: 16, Y: 16}
-
+func (g *Game) drawScore(screen *ebiten.Image, gameZonePos *Position) {
 	boardBlockWidth, _ := g.bgBlockImage.Size()
 	boardWidth := int(g.gameZoneSize.Width) * boardBlockWidth
 	text.Draw(screen, "SCORE", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2, color.White)
 	text.Draw(screen, "00000000", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+8, color.White)
+}
+
+func (g *Game) Draw(screen *ebiten.Image) {
+	gameZonePos := &Position{X: 16, Y: 16}
+
+	g.drawScore(screen, gameZonePos)
 
 	gameZone := g.gameZone
 	for y, row := range gameZone {
