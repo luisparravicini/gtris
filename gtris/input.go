@@ -10,18 +10,23 @@ import (
 
 const keyDown = ebiten.KeyDown
 
-var inputKeys = []ebiten.Key{keyDown, ebiten.KeyLeft, ebiten.KeyRight, ebiten.KeySpace}
+var inputKeys = []ebiten.Key{keyDown, ebiten.KeyLeft, ebiten.KeyRight}
 
 type Input interface {
 	Read() *ebiten.Key
+	IsSpacePressed() bool
 }
 
 type KeyboardInput struct {
 }
 
+func (*KeyboardInput) IsSpacePressed() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeySpace)
+}
+
 func (*KeyboardInput) Read() *ebiten.Key {
 	for _, key := range inputKeys {
-		if inpututil.IsKeyJustPressed(key) {
+		if ebiten.IsKeyPressed(key) {
 			return &key
 		}
 	}
@@ -31,6 +36,10 @@ func (*KeyboardInput) Read() *ebiten.Key {
 
 type AttractModeInput struct {
 	keyPressed chan ebiten.Key
+}
+
+func (*AttractModeInput) IsSpacePressed() bool {
+	return false
 }
 
 func (input *AttractModeInput) Read() *ebiten.Key {

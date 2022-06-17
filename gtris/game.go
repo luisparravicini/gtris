@@ -29,18 +29,21 @@ const (
 )
 
 type Game struct {
-	lastTime      uint
-	fallTime      uint
-	score         uint
-	state         GameState
-	pieces        []*Piece
-	currentPiece  *Piece
-	piecePosition *Position
-	gameZoneSize  Size
-	gameZone      [][]*ebiten.Image
-	bgBlockImage  *ebiten.Image
-	txtFont       font.Face
-	input         Input
+	lastTime         uint
+	fallTime         uint
+	score            uint
+	state            GameState
+	attractMode      bool
+	pieces           []*Piece
+	currentPiece     *Piece
+	piecePosition    *Position
+	gameZoneSize     Size
+	gameZone         [][]*ebiten.Image
+	bgBlockImage     *ebiten.Image
+	txtFont          font.Face
+	input            Input
+	inputAttractMode Input
+	inputKeyboard    Input
 }
 
 func (g *Game) nextPiece() {
@@ -71,6 +74,8 @@ func (g *Game) transferPieceToGameZone() {
 func (g *Game) Start() {
 	g.state = GameStatePlaying
 	g.score = 0
+	g.attractMode = true
+	g.input = g.inputAttractMode
 
 	g.gameZone = make([][]*ebiten.Image, g.gameZoneSize.Height)
 	for y := range g.gameZone {
@@ -78,6 +83,12 @@ func (g *Game) Start() {
 	}
 
 	g.nextPiece()
+}
+
+func (g *Game) StartPlay() {
+	g.Start()
+	g.attractMode = false
+	g.input = g.inputKeyboard
 }
 
 func (g *Game) Update() error {
@@ -90,6 +101,10 @@ func (g *Game) Update() error {
 		key := g.input.Read()
 		if key != nil {
 			g.processInput(*key)
+		}
+
+		if g.attractMode && g.inputKeyboard.IsSpacePressed() {
+			g.StartPlay()
 		}
 	case GameStateGameOver:
 		key := g.input.Read()
@@ -173,6 +188,12 @@ func (g *Game) drawScore(screen *ebiten.Image, gameZonePos *Position) {
 		text.Draw(screen, "GAME OVER", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+dy, color.White)
 		text.Draw(screen, "space to start", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+dy+8, color.White)
 	}
+
+	if g.attractMode {
+		dy := 96
+		text.Draw(screen, "press space", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+dy, color.White)
+		text.Draw(screen, "  to play", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+dy+8, color.White)
+	}
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -210,12 +231,13 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func NewGame() *Game {
 	game := &Game{
-		txtFont:      NewFont(),
-		input:        NewAttractModeInput(),
-		fallTime:     300,
-		pieces:       allPieces,
-		gameZoneSize: Size{Width: 10, Height: 24},
-		bgBlockImage: createImage(imgBlockBG),
+		txtFont:          NewFont(),
+		inputAttractMode: NewAttractModeInput(),
+		inputKeyboard:    &KeyboardInput{},
+		fallTime:         300,
+		pieces:           allPieces,
+		gameZoneSize:     Size{Width: 10, Height: 24},
+		bgBlockImage:     createImage(imgBlockBG),
 	}
 
 	game.Start()
