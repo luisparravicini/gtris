@@ -193,6 +193,12 @@ func (g *Game) drawScore(screen *ebiten.Image, gameZonePos *Position) {
 	boardWidth := int(g.gameZoneSize.Width) * boardBlockWidth
 	text.Draw(screen, "SCORE", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2, color.White)
 	text.Draw(screen, fmt.Sprintf("%08d", g.score), g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+8, color.White)
+
+	if g.state == GameStateGameOver {
+		dy := 32
+		text.Draw(screen, "GAME OVER", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+dy, color.White)
+		text.Draw(screen, "space to start", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+dy+8, color.White)
+	}
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
