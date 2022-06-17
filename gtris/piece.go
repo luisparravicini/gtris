@@ -4,14 +4,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-const pieceBlockMarker = 'X'
+const pieceBlockMarker = 1
 
 type Piece struct {
-	Blocks []string
+	Blocks [][]int
 	Image  *ebiten.Image
 }
 
-func NewPiece(blocks []string, imgData []byte) *Piece {
+func NewPiece(blocks [][]int, imgData []byte) *Piece {
 	return &Piece{
 		Blocks: blocks,
 		Image:  createImage(imgData),

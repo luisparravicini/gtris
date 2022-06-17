@@ -28,8 +28,12 @@ func (g *Game) transferPieceToGameZone() {
 func (g *Game) insideGameZone(deltaPos Position) bool {
 	piecePos := *g.piecePosition
 	piecePos.Add(deltaPos)
+	return g.pieceInsideGameZone(g.currentPiece, piecePos)
+}
 
-	for dy, row := range g.currentPiece.Blocks {
+func (g *Game) pieceInsideGameZone(piece *Piece, piecePos Position) bool {
+
+	for dy, row := range piece.Blocks {
 		for dx, value := range row {
 			if value == pieceBlockMarker {
 				screenPos := &Position{
@@ -91,4 +95,21 @@ func (g *Game) checkForLines() int {
 	}
 
 	return len(lines)
+}
+
+func (g *Game) rotatePiece() *Piece {
+	newPiece := *g.currentPiece
+
+	newPiece.Blocks = make([][]int, len(g.currentPiece.Blocks[0]))
+	for y := range newPiece.Blocks {
+		newPiece.Blocks[y] = make([]int, len(g.currentPiece.Blocks))
+	}
+
+	for y, row := range g.currentPiece.Blocks {
+		for x := range row {
+			newPiece.Blocks[x][y] = g.currentPiece.Blocks[y][x]
+		}
+	}
+
+	return &newPiece
 }

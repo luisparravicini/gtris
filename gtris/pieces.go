@@ -30,34 +30,34 @@ var imgBlockG []byte
 var imgBlockBG []byte
 
 var allPieces = []*Piece{
-	NewPiece([]string{
-		"XXXX",
-		"    ",
+	NewPiece([][]int{
+		{1, 1, 1, 1},
+		{0, 0, 0, 0},
 	}, imgBlockA),
-	NewPiece([]string{
-		"X   ",
-		"XXXX",
+	NewPiece([][]int{
+		{1, 0, 0, 0},
+		{1, 1, 1, 1},
 	}, imgBlockB),
-	NewPiece([]string{
-		"   X",
-		"XXXX",
+	NewPiece([][]int{
+		{0, 0, 0, 1},
+		{1, 1, 1, 1},
 	}, imgBlockC),
 
-	NewPiece([]string{
-		"XX  ",
-		"XX  ",
+	NewPiece([][]int{
+		{1, 1, 0, 0},
+		{1, 1, 0, 0},
 	}, imgBlockD),
 
-	NewPiece([]string{
-		" XX ",
-		"XX  ",
+	NewPiece([][]int{
+		{0, 1, 1, 0},
+		{1, 1, 0, 0},
 	}, imgBlockE),
-	NewPiece([]string{
-		" X  ",
-		"XXX ",
+	NewPiece([][]int{
+		{0, 1, 0, 0},
+		{1, 1, 1, 0},
 	}, imgBlockF),
-	NewPiece([]string{
-		"XX  ",
-		" XX ",
+	NewPiece([][]int{
+		{1, 1, 0, 0},
+		{0, 1, 1, 0},
 	}, imgBlockG),
 }

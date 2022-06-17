@@ -147,6 +147,13 @@ func (g *Game) processInput(key ebiten.Key) {
 			g.piecePosition.Add(deltaPos)
 		}
 	}
+
+	if key == ebiten.KeyUp {
+		newPiece := g.rotatePiece()
+		if g.pieceInsideGameZone(newPiece, *g.piecePosition) {
+			g.currentPiece = newPiece
+		}
+	}
 }
 
 func (g *Game) drawText(screen *ebiten.Image, gameZonePos *Position) {
