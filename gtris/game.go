@@ -228,6 +228,8 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func NewGame() *Game {
+	ebiten.SetMaxTPS(16)
+
 	game := &Game{
 		txtFont:          NewFont(),
 		inputAttractMode: NewAttractModeInput(),
