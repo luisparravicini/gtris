@@ -107,7 +107,7 @@ func (g *Game) rotatePiece() *Piece {
 
 	for y, row := range g.currentPiece.Blocks {
 		for x := range row {
-			newPiece.Blocks[x][y] = g.currentPiece.Blocks[y][x]
+			newPiece.Blocks[x][len(g.currentPiece.Blocks)-1-y] = g.currentPiece.Blocks[y][x]
 		}
 	}
 
