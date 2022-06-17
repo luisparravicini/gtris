@@ -57,7 +57,7 @@ type Game struct {
 
 func (g *Game) nextPiece() {
 	g.currentPiece = g.pieces[rand.Intn(len(g.pieces))]
-	g.piecePosition = &Position{X: 4, Y: 0}
+	g.piecePosition = &Position{X: int(g.gameZoneSize.Width)/2 - 1, Y: 0}
 }
 
 func (g *Game) transferPieceToGameZone() {
@@ -72,12 +72,6 @@ func (g *Game) transferPieceToGameZone() {
 			gameZonePos := &Position{
 				X: piecePos.X + dx,
 				Y: piecePos.Y + dy,
-			}
-			if gameZonePos.X < 0 || gameZonePos.Y < 0 {
-				continue
-			}
-			if gameZonePos.X >= int(g.gameZoneSize.Width) || gameZonePos.Y >= int(g.gameZoneSize.Height) {
-				continue
 			}
 
 			g.gameZone[gameZonePos.Y][gameZonePos.X] = piece.Image
