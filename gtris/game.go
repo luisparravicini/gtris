@@ -2,6 +2,7 @@ package gtris
 
 import (
 	_ "embed"
+	"fmt"
 	"image/color"
 	_ "image/png"
 	"math/rand"
@@ -49,6 +50,7 @@ type Size struct {
 type Game struct {
 	lastTime      uint
 	fallTime      uint
+	score         uint
 	pieces        []*Piece
 	currentPiece  *Piece
 	piecePosition *Position
@@ -156,7 +158,7 @@ func (g *Game) drawScore(screen *ebiten.Image, gameZonePos *Position) {
 	boardBlockWidth, _ := g.bgBlockImage.Size()
 	boardWidth := int(g.gameZoneSize.Width) * boardBlockWidth
 	text.Draw(screen, "SCORE", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2, color.White)
-	text.Draw(screen, "00000000", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+8, color.White)
+	text.Draw(screen, fmt.Sprintf("%08d", g.score), g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+8, color.White)
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
