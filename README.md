@@ -9,9 +9,9 @@ Inspired by [@danicat83](https://twitter.com/danicat83)'s talk [GopherCon UK 202
 
 To build for the current platform: `make build` and then run `./gtris`.
 
-To build for the web: `make web` and all the files will be copied to the `web` directory.
+To build for the web: `make web` and all the files will be copied to the `web` directory. With `make run_web` a http server is started so the web version can be accessed locally.
 
 
 ## Images
 
-The image used to create all of the pngs in `images/` is `images/block.xcf`
+The image used to create all of the pngs in `gtris/images/` is `gtris/images/block.xcf`
