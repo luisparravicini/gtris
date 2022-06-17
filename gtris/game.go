@@ -52,6 +52,7 @@ type Game struct {
 	gameZoneSize  Size
 	gameZone      [][]*ebiten.Image
 	bgBlockImage  *ebiten.Image
+	input         Input
 }
 
 func (g *Game) nextPiece() {
@@ -90,7 +91,16 @@ func (g *Game) Update() error {
 		g.lastTime = uint(time.Now().UnixMilli())
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyDown) {
+	key := g.input.Read()
+	if key != nil {
+		g.processInput(*key)
+	}
+
+	return nil
+}
+
+func (g *Game) processInput(key ebiten.Key) {
+	if key == ebiten.KeyDown {
 		if g.piecePosition.Y < int(g.gameZoneSize.Height)-1 {
 			g.piecePosition.Y++
 		} else {
@@ -99,19 +109,17 @@ func (g *Game) Update() error {
 		}
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+	if key == ebiten.KeyLeft {
 		if g.piecePosition.X > 0 {
 			g.piecePosition.X--
 		}
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyRight) {
+	if key == ebiten.KeyRight {
 		if g.piecePosition.X < int(g.gameZoneSize.Width) {
 			g.piecePosition.X++
 		}
 	}
-
-	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -158,6 +166,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func NewGame() *Game {
 	game := &Game{
+		input:    NewAttractModeInput(),
 		fallTime: 300,
 		pieces: []*Piece{
 			NewPiece([]string{
