@@ -29,7 +29,7 @@ const (
 )
 
 type Game struct {
-	lastTime         uint
+	lastTime         time.Time
 	fallTime         uint
 	elapsed          uint
 	score            uint
@@ -77,7 +77,7 @@ func (g *Game) Start() {
 	g.score = 0
 	g.attractMode = true
 	g.input = g.inputAttractMode
-	g.lastTime = 0
+	g.lastTime = time.Now()
 	g.elapsed = 0
 
 	g.gameZone = make([][]*ebiten.Image, g.gameZoneSize.Height)
@@ -95,21 +95,15 @@ func (g *Game) StartPlay() {
 }
 
 func (g *Game) Update() error {
-	now := uint(time.Now().UnixMilli())
-	firstLoop := g.lastTime == 0
-	if !firstLoop {
-		g.elapsed += now - g.lastTime
-	}
-	g.lastTime = now
+	g.elapsed += uint(time.Since(g.lastTime).Milliseconds())
+	g.lastTime = time.Now()
 
 	switch g.state {
 	case GameStatePlaying:
-		if !firstLoop {
-			if g.elapsed > g.fallTime {
-				g.processInput(keyDown)
-				g.elapsed = 0
-				return nil
-			}
+		if g.elapsed > g.fallTime {
+			g.processInput(keyDown)
+			g.elapsed = 0
+			return nil
 		}
 
 		key := g.input.Read()
