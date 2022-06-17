@@ -57,8 +57,13 @@ func (g *Game) Update() error {
 		g.lastTime = uint(time.Now().UnixMilli())
 	}
 
-	// if ebiten.IsKeyPressed(ebiten.KeyDown) {
-	// }
+	if ebiten.IsKeyPressed(ebiten.KeyDown) {
+		if g.piecePosition.Y < 23 {
+			g.piecePosition.Y++
+		} else {
+			g.nextPiece()
+		}
+	}
 
 	return nil
 }
