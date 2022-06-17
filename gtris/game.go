@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"image/color"
 	"math"
-	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
@@ -29,9 +28,8 @@ const (
 )
 
 type Game struct {
-	lastTime time.Time
-	fallTime uint
-	elapsed  uint
+	dropTicks   uint
+	elapsedDrop uint
 
 	score       int
 	state       GameState
@@ -58,8 +56,7 @@ func (g *Game) Start() {
 	g.score = 0
 	g.attractMode = true
 	g.input = g.inputAttractMode
-	g.lastTime = time.Now()
-	g.elapsed = 0
+	g.elapsedDrop = 0
 
 	g.gameZone = make([][]*ebiten.Image, g.gameZoneSize.Height)
 	for y := range g.gameZone {
@@ -76,14 +73,13 @@ func (g *Game) StartPlay() {
 }
 
 func (g *Game) Update() error {
-	g.elapsed += uint(time.Since(g.lastTime).Milliseconds())
-	g.lastTime = time.Now()
+	g.elapsedDrop += 1
 
 	switch g.state {
 	case GameStatePlaying:
-		if g.elapsed > g.fallTime {
+		if g.elapsedDrop > g.dropTicks {
 			g.processInput(keyDown)
-			g.elapsed = 0
+			g.elapsedDrop = 0
 			return nil
 		}
 
@@ -234,7 +230,7 @@ func NewGame() *Game {
 		txtFont:          NewFont(),
 		inputAttractMode: NewAttractModeInput(),
 		inputKeyboard:    &KeyboardInput{},
-		fallTime:         700,
+		dropTicks:        10,
 		pieces:           allPieces,
 		gameZoneSize:     Size{Width: 10, Height: 24},
 		bgBlockImage:     createImage(imgBlockBG),
