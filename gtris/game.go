@@ -182,15 +182,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		piece := g.currentPiece
 		piece.Draw(screen, gameZonePos, g.piecePosition)
 	}
-
-	// for x := 0; x < 10; x++ {
-	// 	for y := 0; y < 24; y++ {
-	// 		op := &ebiten.DrawImageOptions{}
-	// 		// op.GeoM.Scale(4, 4)
-	// 		op.GeoM.Translate(float64(x*w), float64(y*h))
-	// 		screen.DrawImage(g.blockImage, op)
-	// 	}
-	// }
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
