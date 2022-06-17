@@ -6,6 +6,8 @@ import (
 	"image"
 	_ "image/png"
 	"log"
+	"math/rand"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -38,10 +40,26 @@ var imgBlockF []byte
 var imgBlockG []byte
 
 type Game struct {
-	pieces []*Piece
+	lastTime      uint
+	fallTime      uint
+	pieces        []*Piece
+	currentPiece  *Piece
+	piecePosition *Position
+}
+
+func (g *Game) nextPiece() {
+	g.currentPiece = g.pieces[rand.Intn(len(g.pieces))]
+	g.piecePosition = &Position{X: 4, Y: 0}
 }
 
 func (g *Game) Update() error {
+	if g.lastTime == 0 {
+		g.lastTime = uint(time.Now().UnixMilli())
+	}
+
+	// if ebiten.IsKeyPressed(ebiten.KeyDown) {
+	// }
+
 	return nil
 }
 
@@ -67,28 +85,31 @@ func NewPiece(blocks []string, imgData []byte) *Piece {
 	}
 }
 
-func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Nearest Filter (default) VS Linear Filter")
+func (p *Piece) Draw(screen *ebiten.Image, gameZonePos *Position, piecePos *Position) {
+	w, h := p.Image.Size()
 
-	piece := g.pieces[2]
-
-	w, h := piece.Image.Size()
-	piecePos := &Position{}
-	gameZonePos := &Position{X: 16, Y: 16}
-
-	for dy, row := range piece.Blocks {
+	for dy, row := range p.Blocks {
 		for dx, value := range row {
 			if value == 'X' {
-				op := &ebiten.DrawImageOptions{}
-				// op.ColorM.Translate(1, 0, 0, 1)
 				screenPos := &Position{
 					X: gameZonePos.X + (piecePos.X+dx)*w,
 					Y: gameZonePos.Y + (piecePos.Y+dy)*h,
 				}
+				op := &ebiten.DrawImageOptions{}
 				op.GeoM.Translate(float64(screenPos.X), float64(screenPos.Y))
-				screen.DrawImage(piece.Image, op)
+				screen.DrawImage(p.Image, op)
 			}
 		}
+	}
+}
+
+func (g *Game) Draw(screen *ebiten.Image) {
+	ebitenutil.DebugPrint(screen, "Nearest Filter (default) VS Linear Filter")
+
+	if g.currentPiece != nil {
+		piece := g.currentPiece
+		gameZonePos := &Position{X: 16, Y: 16}
+		piece.Draw(screen, gameZonePos, g.piecePosition)
 	}
 
 	// for x := 0; x < 10; x++ {
@@ -106,7 +127,10 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
+
 	game := &Game{
+		fallTime: 300,
 		pieces: []*Piece{
 			NewPiece([]string{
 				"XXXX",
@@ -140,6 +164,7 @@ func main() {
 			}, imgBlockG),
 		},
 	}
+	game.nextPiece()
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("gtris")
