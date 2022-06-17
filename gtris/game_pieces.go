@@ -54,9 +54,18 @@ func (g *Game) insideGameZone(deltaPos Position) bool {
 	return true
 }
 
-func (g *Game) nextPiece() {
-	g.currentPiece = g.pieces[rand.Intn(len(g.pieces))]
+func (g *Game) fetchNextPiece() {
+	getNextPiece := func() *Piece {
+		return g.pieces[rand.Intn(len(g.pieces))]
+	}
+
+	if g.nextPiece == nil {
+		g.nextPiece = getNextPiece()
+	}
+
+	g.currentPiece = g.nextPiece
 	g.piecePosition = &Position{X: int(g.gameZoneSize.Width)/2 - 1, Y: 0}
+	g.nextPiece = getNextPiece()
 }
 
 func (g *Game) checkForLines() int {

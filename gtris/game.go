@@ -3,6 +3,7 @@ package gtris
 import (
 	"fmt"
 	"image/color"
+	"math"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -37,6 +38,7 @@ type Game struct {
 	attractMode bool
 	pieces      []*Piece
 
+	nextPiece     *Piece
 	currentPiece  *Piece
 	piecePosition *Position
 
@@ -64,7 +66,7 @@ func (g *Game) Start() {
 		g.gameZone[y] = make([]*ebiten.Image, g.gameZoneSize.Width)
 	}
 
-	g.nextPiece()
+	g.fetchNextPiece()
 }
 
 func (g *Game) StartPlay() {
@@ -112,7 +114,7 @@ func (g *Game) processInput(key ebiten.Key) {
 			g.transferPieceToGameZone()
 			linesRemoved := g.checkForLines()
 			g.updateScore(linesRemoved)
-			g.nextPiece()
+			g.fetchNextPiece()
 
 			deltaPos := Position{}
 			if !g.insideGameZone(deltaPos) {
@@ -144,16 +146,19 @@ func (g *Game) drawText(screen *ebiten.Image, gameZonePos *Position) {
 	text.Draw(screen, fmt.Sprintf("%08d", g.score), g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+8, color.White)
 
 	if g.state == GameStateGameOver {
-		dy := 32
+		dy := 122
 		text.Draw(screen, "GAME OVER", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+dy, color.White)
 		text.Draw(screen, "space to start", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+dy+8, color.White)
 	}
 
 	if g.attractMode {
-		dy := 96
+		dy := 148
 		text.Draw(screen, "press space", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+dy, color.White)
 		text.Draw(screen, "  to play", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+dy+8, color.White)
 	}
+
+	dy := 48
+	text.Draw(screen, "NEXT", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+dy, color.White)
 }
 
 func (g *Game) updateScore(lines int) {
@@ -192,8 +197,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 
 	if g.currentPiece != nil {
-		piece := g.currentPiece
-		piece.Draw(screen, gameZonePos, g.piecePosition)
+		g.currentPiece.Draw(screen, gameZonePos, g.piecePosition)
+	}
+
+	if g.nextPiece != nil {
+		nextPos := &Position{X: int(math.Round(ScreenWidth * 0.5)), Y: int(math.Round(ScreenHeight * .37))}
+		g.nextPiece.Draw(screen, nextPos, &Position{})
 	}
 }
 
