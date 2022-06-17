@@ -26,7 +26,11 @@ func (*KeyboardInput) IsSpacePressed() bool {
 
 func (*KeyboardInput) Read() *ebiten.Key {
 	for _, key := range inputKeys {
-		if ebiten.IsKeyPressed(key) {
+		if key == ebiten.KeyUp {
+			if inpututil.IsKeyJustPressed(key) {
+				return &key
+			}
+		} else if ebiten.IsKeyPressed(key) {
 			return &key
 		}
 	}

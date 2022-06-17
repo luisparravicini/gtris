@@ -224,13 +224,13 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func NewGame() *Game {
-	ebiten.SetMaxTPS(16)
+	ebiten.SetMaxTPS(18)
 
 	game := &Game{
 		txtFont:          NewFont(),
 		inputAttractMode: NewAttractModeInput(),
 		inputKeyboard:    &KeyboardInput{},
-		dropTicks:        10,
+		dropTicks:        4,
 		pieces:           allPieces,
 		gameZoneSize:     Size{Width: 10, Height: 24},
 		bgBlockImage:     createImage(imgBlockBG),
