@@ -1,26 +1,10 @@
 package gtris
 
 import (
-	"bytes"
-	"image"
-	"log"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type Position struct {
-	X int
-	Y int
-}
-
-func CreateImage(imgData []byte) *ebiten.Image {
-	img, _, err := image.Decode(bytes.NewReader(imgData))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return ebiten.NewImageFromImage(img)
-}
+const pieceBlockMarker = 'X'
 
 type Piece struct {
 	Blocks []string
@@ -30,7 +14,7 @@ type Piece struct {
 func NewPiece(blocks []string, imgData []byte) *Piece {
 	return &Piece{
 		Blocks: blocks,
-		Image:  CreateImage(imgData),
+		Image:  createImage(imgData),
 	}
 }
 

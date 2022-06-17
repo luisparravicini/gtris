@@ -3,7 +3,6 @@ module github.com/luisparravicini/gtris
 go 1.18
 
 require (
-	github.com/hajimehoshi/ebiten v1.12.12
 	github.com/hajimehoshi/ebiten/v2 v2.3.4
 )
 

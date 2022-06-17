@@ -64,13 +64,22 @@ func (g *Game) transferPieceToGameZone() {
 	piecePos := g.piecePosition
 	for dy, row := range piece.Blocks {
 		for dx, value := range row {
-			if value == 'X' {
-				gameZonePos := &Position{
-					X: piecePos.X + dx,
-					Y: piecePos.Y + dy,
-				}
-				g.gameZone[gameZonePos.Y][gameZonePos.X] = piece.Image
+			if value != pieceBlockMarker {
+				continue
 			}
+
+			gameZonePos := &Position{
+				X: piecePos.X + dx,
+				Y: piecePos.Y + dy,
+			}
+			if gameZonePos.X < 0 || gameZonePos.Y < 0 {
+				continue
+			}
+			if gameZonePos.X >= int(g.gameZoneSize.Width) || gameZonePos.Y >= int(g.gameZoneSize.Height) {
+				continue
+			}
+
+			g.gameZone[gameZonePos.Y][gameZonePos.X] = piece.Image
 		}
 	}
 
@@ -183,7 +192,7 @@ func NewGame() *Game {
 			}, imgBlockG),
 		},
 		gameZoneSize: Size{Width: 10, Height: 24},
-		bgBlockImage: CreateImage(imgBlockBG),
+		bgBlockImage: createImage(imgBlockBG),
 	}
 
 	game.gameZone = make([][]*ebiten.Image, game.gameZoneSize.Height)
