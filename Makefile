@@ -12,6 +12,8 @@ build_web: clean_web
 	cp $(shell go env GOROOT)/misc/wasm/wasm_exec.js ${WEB_DST_PATH}
 	cp web/index.html ${WEB_DST_PATH}
 
+	cd ${WEB_DST_PATH} && zip -r ${WEB_BINARY_NAME}.zip * && cd -
+
 run: build
 	./${BINARY_NAME}
 
