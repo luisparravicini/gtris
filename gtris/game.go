@@ -2,11 +2,14 @@ package gtris
 
 import (
 	_ "embed"
+	"image/color"
 	_ "image/png"
 	"math/rand"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text"
+	"golang.org/x/image/font"
 )
 
 const (
@@ -52,6 +55,7 @@ type Game struct {
 	gameZoneSize  Size
 	gameZone      [][]*ebiten.Image
 	bgBlockImage  *ebiten.Image
+	txtFont       font.Face
 	input         Input
 }
 
@@ -149,9 +153,12 @@ func (g *Game) processInput(key ebiten.Key) {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	// ebitenutil.DebugPrint(screen, "Nearest Filter (default) VS Linear Filter")
-
 	gameZonePos := &Position{X: 16, Y: 16}
+
+	boardBlockWidth, _ := g.bgBlockImage.Size()
+	boardWidth := int(g.gameZoneSize.Width) * boardBlockWidth
+	text.Draw(screen, "SCORE", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2, color.White)
+	text.Draw(screen, "00000000", g.txtFont, boardWidth+gameZonePos.X*2, gameZonePos.Y*2+8, color.White)
 
 	gameZone := g.gameZone
 	for y, row := range gameZone {
@@ -192,6 +199,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func NewGame() *Game {
 	game := &Game{
+		txtFont:  NewFont(),
 		input:    NewAttractModeInput(),
 		fallTime: 300,
 		pieces: []*Piece{
