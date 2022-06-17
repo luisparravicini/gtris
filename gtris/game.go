@@ -105,20 +105,30 @@ func (g *Game) Update() error {
 	return nil
 }
 
+func (g *Game) processPiece() bool {
+	g.transferPieceToGameZone()
+	linesRemoved := g.checkForLines()
+	g.updateScore(linesRemoved)
+	g.fetchNextPiece()
+
+	stopProcess := false
+	deltaPos := Position{}
+	if !g.insideGameZone(deltaPos) {
+		g.state = GameStateGameOver
+		stopProcess = true
+	}
+
+	return stopProcess
+}
+
 func (g *Game) processInput(key ebiten.Key) {
 	if key == ebiten.KeyDown {
 		deltaPos := Position{X: 0, Y: 1}
 		if g.insideGameZone(deltaPos) {
 			g.piecePosition.Add(deltaPos)
 		} else {
-			g.transferPieceToGameZone()
-			linesRemoved := g.checkForLines()
-			g.updateScore(linesRemoved)
-			g.fetchNextPiece()
-
-			deltaPos := Position{}
-			if !g.insideGameZone(deltaPos) {
-				g.state = GameStateGameOver
+			stopProcess := g.processPiece()
+			if stopProcess {
 				return
 			}
 		}

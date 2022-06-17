@@ -10,7 +10,7 @@ import (
 
 const keyDown = ebiten.KeyDown
 
-var inputKeys = []ebiten.Key{keyDown, ebiten.KeyLeft, ebiten.KeyRight}
+var inputKeys = []ebiten.Key{keyDown, ebiten.KeyLeft, ebiten.KeyRight, ebiten.KeyUp}
 
 type Input interface {
 	Read() *ebiten.Key
