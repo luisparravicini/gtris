@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	ScreenWidth  = 256
+	ScreenWidth  = 240
 	ScreenHeight = 240
 )
 
