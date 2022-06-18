@@ -42,8 +42,10 @@ type AttractModeInput struct {
 	keyPressed chan ebiten.Key
 }
 
-func (*AttractModeInput) IsSpacePressed() bool {
-	return false
+func (input *AttractModeInput) IsSpacePressed() bool {
+	// if there's a key available we just say it's space (this is only called to start the game)
+	hasKey := input.Read() != nil
+	return hasKey
 }
 
 func (input *AttractModeInput) Read() *ebiten.Key {

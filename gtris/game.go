@@ -92,9 +92,12 @@ func (g *Game) Update() error {
 			g.StartPlay()
 		}
 	case GameStateGameOver:
-		key := g.input.Read()
-		if key != nil {
-			g.Start()
+		if g.input.IsSpacePressed() {
+			if g.attractMode {
+				g.Start()
+			} else {
+				g.StartPlay()
+			}
 		}
 	}
 
