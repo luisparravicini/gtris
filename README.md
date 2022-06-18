@@ -21,4 +21,4 @@ The image used to create all of the pngs in `gtris/images/` is `gtris/images/blo
 
 - Left/Right: Move
 - Up: Rotate
-- Down: Drop
+- Down: Drop (keep it pressed)
