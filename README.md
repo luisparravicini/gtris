@@ -8,6 +8,8 @@ I've found about ebiten by [@danicat83](https://twitter.com/danicat83)'s talk [G
 Play it on your browser here https://mulitasoft.itch.io/gtris
 
 
+_The pieces rotation could be improved_
+
 ## Building
 
 To build for the current platform: `make build` and then run `./gtris`.
