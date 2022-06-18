@@ -7,8 +7,10 @@ I've found about ebiten by [@danicat83](https://twitter.com/danicat83)'s talk [G
 
 Play it on your browser here https://mulitasoft.itch.io/gtris
 
+![screenshot](assets/screenshot-0.gif)
 
-_The pieces rotation could be improved_
+
+_The pieces rotation __should__ be improved_
 
 ## Building
 
