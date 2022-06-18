@@ -5,6 +5,9 @@ A tetris clone in golang using [ebitengine](https://github.com/hajimehoshi/ebite
 I've found about ebiten by [@danicat83](https://twitter.com/danicat83)'s talk [GopherCon UK 2021: Daniela Petruzalek - Building an Indie Game in GO](https://www.youtube.com/watch?v=Oce77qCXu7I)
 
 
+Play it on your browser here https://mulitasoft.itch.io/gtris
+
+
 ## Building
 
 To build for the current platform: `make build` and then run `./gtris`.
